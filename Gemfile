@@ -7,8 +7,8 @@ gem "activerecord"
 gem "sinatra-activerecord", :require => 'sinatra/activerecord'
 gem "rake"
 
-gem "sass"
-gem "coffee-script"
+# gem "sass"
+# gem "coffee-script"
 
 gem 'sqlite3'
 
