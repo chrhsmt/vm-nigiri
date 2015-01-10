@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Call from MAC</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheet/main.css" rel="stylesheet" type="text/css">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+        <div class="inner-wrapper">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-xs-12 col-sm-10  col-lg-10 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 text-center">
+                  <%= yield %>            
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-sm-10  col-lg-10 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 text-center">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- twilio -->
+                    <ins class="adsbygoogle"
+                         style="display:inline-block;width:234px;height:60px"
+                         data-ad-client="ca-pub-4522070327140669"
+                         data-ad-slot="4533705030"></ins>
+                    <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/javascript/main.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-51748800-1', 'twilio-mac.herokuapp.com');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
