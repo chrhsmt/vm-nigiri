@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem "sinatra"
 gem "sinatra-contrib"
+gem "backports", "~> 3.6.3"
 gem "activerecord"
 gem "sinatra-activerecord", :require => 'sinatra/activerecord'
 gem "rake"

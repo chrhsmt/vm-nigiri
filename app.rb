@@ -27,6 +27,10 @@ class App < Sinatra::Base
         erb :index, locals: { test: "yes" }
     end
 
+    get '/instances' do
+        json Instance.all
+    end
+
     # post "/call" do 
     #     begin
     #         call = TwilioAction.new.call params["tel"]

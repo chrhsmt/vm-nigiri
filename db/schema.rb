@@ -11,19 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140608163944) do
+ActiveRecord::Schema.define(version: 20150110083545) do
 
-  create_table "calls", force: true do |t|
+  create_table "instances", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "disk_size"
+    t.integer  "memory"
     t.string   "ip"
-    t.string   "tel"
-    t.text     "referer",    limit: 255
-    t.string   "user_agent"
+    t.string   "mac"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "sid"
-    t.string   "status"
   end
 
-  add_index "calls", ["sid"], name: "index_calls_on_sid"
+  add_index "instances", ["ip"], name: "index_instances_on_ip"
+  add_index "instances", ["name"], name: "index_instances_on_name"
 
 end
