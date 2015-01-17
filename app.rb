@@ -5,7 +5,7 @@ require "sinatra/json"
 require 'pry' if development?
 
 # require_relative "twilio_action"
-require_relative 'models/init'
+# require_relative 'models/init'
 
 class App < Sinatra::Base
     register Sinatra::Reloader
@@ -13,6 +13,15 @@ class App < Sinatra::Base
     enable :sessions
 
     use ActiveRecord::ConnectionAdapters::ConnectionManagement
+
+    configure do
+      $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/models")
+      require "init"
+      $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")
+      Dir.glob("#{File.dirname(__FILE__)}/lib/*.rb") { |lib| 
+        require File.basename(lib, '.*') 
+      }
+    end
  
     get "/stylesheet/main.css" do
         scss :"scss/main"
@@ -28,7 +37,7 @@ class App < Sinatra::Base
     end
 
     get '/instances' do
-        json Instance.all
+        json DataCenterManager.new.getInstances
     end
 
     # post "/call" do 
