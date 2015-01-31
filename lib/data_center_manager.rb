@@ -22,7 +22,7 @@ class DataCenterManager
         machine_ip = machine.ip
         vm_ip = "192.168.0.71"
         macaddr = "52:54:00:12:34:60"
-        ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr}", true)
+        ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr} #{vm_name}", true)
         params = {
             machine: machine,
             name: vm_name,
@@ -36,9 +36,9 @@ class DataCenterManager
     end
 
     def terminate(instanceId)
+        instance = ::Instance.find(instanceId)
+        machine = instance.machine
         begin
-            instance = ::Instance.find(instanceId)
-            machine = instance.machine
             connect_monitor(machine.ip, 4444) do | telnet |
                 telnet.cmd("quit")
             end
@@ -48,6 +48,8 @@ class DataCenterManager
             e.message
         rescue Errno::ECONNRESET => e
             # Telnetのコネクションが切切れるので正常終了
+        rescue => e
+            ssh(machine.ip, "kill -9 $(car /var/run/#{instance.name}.pid)", true)
         end
     end
 
@@ -58,7 +60,7 @@ class DataCenterManager
             "ssh -o 'StrictHostKeyChecking no' " +
             "root@#{private_ip} '#{command}'" + dev_null
             print "Execute: #{one_liner}\n" if dump
-            system one_liner           
+            pid = %q(one_liner)           
         end
 
         def connect_monitor(ip, port, &blk)
