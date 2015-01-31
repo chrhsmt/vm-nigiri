@@ -1,9 +1,9 @@
 #!/bin/bash
 
-MEMORY=1024
+MEMORY=$1
 TELNET_PORT=4444
 METADATA_DRIVE=./metadata_drive
-MAC_ADDR=52:54:00:12:34:59
+MAC_ADDR=$2
 
 /usr/libexec/qemu-kvm \
 -hda ./vm.img \
