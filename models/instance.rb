@@ -1,3 +1,3 @@
 class Instance < ActiveRecord::Base
-    belong_to :machine
+    belongs_to :machine
 end
