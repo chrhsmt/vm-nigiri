@@ -1,5 +1,6 @@
 # require 'init'
 require "securerandom"
+require "net/telnet"
 
 class DataCenterManager
 
@@ -36,9 +37,9 @@ class DataCenterManager
     end
 
     def terminate(instanceId)
-        instance = ::Instance.find(instanceId)
-        machine = instance.machine
         begin
+            instance = ::Instance.find(instanceId)
+            machine = instance.machine
             connect_monitor(machine.ip, 4444) do | telnet |
                 telnet.cmd("quit")
             end
@@ -50,6 +51,8 @@ class DataCenterManager
             # Telnetのコネクションが切切れるので正常終了
         rescue => e
             ssh(machine.ip, "kill -9 $(car /var/run/#{instance.name}.pid)", true)
+            instance.destroy!
+            nil
         end
     end
 
@@ -60,7 +63,7 @@ class DataCenterManager
             "ssh -o 'StrictHostKeyChecking no' " +
             "root@#{private_ip} '#{command}'" + dev_null
             print "Execute: #{one_liner}\n" if dump
-            pid = %q(#{one_liner})           
+            pid = `#{one_liner}`
         end
 
         def connect_monitor(ip, port, &blk)
@@ -72,6 +75,9 @@ class DataCenterManager
                     "Timeout" => 60,
                     "Waittime" => 0.2)
                 blk.call(telnet)
+            rescue => e
+                p e
+                puts e.message
             ensure
                 telnet.close
             end
