@@ -45,8 +45,8 @@ class App < Sinatra::Base
     end
 
     delete '/instance/:id' do 
-        DataCenterManager.new.terminate params["id"]
-        json "ok"
+        message = DataCenterManager.new.terminate params["id"]
+        json message.nil? ? "ok" : "ng : #{message}"
     end
 
     # post "/call" do 
