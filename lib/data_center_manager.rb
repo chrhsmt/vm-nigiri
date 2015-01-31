@@ -1,8 +1,10 @@
 # require 'init'
+require "securerandom"
 
 class DataCenterManager
 
     STATUS_RUNNING = "running".freeze
+    STARTUP_SHELL = "/root/setup.sh".freeze
 
     def initialize
         
@@ -13,21 +15,24 @@ class DataCenterManager
     end
 
     def launch
-        ip = "192.168.0.30"
-        ssh(ip, "ifconfig", true)
+        vm_name = "vm_syake_#{SecureRandom.uuid}"
+        machine_ip = "192.168.0.30"
+        vm_ip = "192.168.0.71"
+        macaddr = "52:54:00:12:34:60"
+        ssh(machine_ip, "#{STARTUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}", true)
         params = {
-            name: "syake-test-vm",
+            name: vm_name,
             disk_size: 1024000000,
             memory: 1024,
-            ip: ip,
-            mac: "52:54:00:12:34:60",
+            ip: vm_ip,
+            mac: macaddr,
             status: STATUS_RUNNING
         }
         ::Instance.create!(params)
     end
 
     def terminate(instanceId)
-        
+        ::Instance.find(instanceId).destroy!
     end
 
     private

@@ -40,6 +40,15 @@ class App < Sinatra::Base
         json DataCenterManager.new.getInstances
     end
 
+    post '/instance' do 
+        json DataCenterManager.new.launch
+    end
+
+    delete '/instance/:id' do 
+        DataCenterManager.new.terminate params["id"]
+        json "ok"
+    end
+
     # post "/call" do 
     #     begin
     #         call = TwilioAction.new.call params["tel"]
