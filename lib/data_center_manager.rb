@@ -60,7 +60,7 @@ class DataCenterManager
         rescue Errno::ECONNRESET => e
             # Telnetのコネクションが切切れるので正常終了
         rescue => e
-            ssh(machine.ip, "kill -9 $(car /var/run/#{instance.name}.pid)", true)
+            ssh(machine.ip, "kill -9 $(cat /var/run/#{instance.name}.pid)", true)
             instance.destroy!
             nil
         end
