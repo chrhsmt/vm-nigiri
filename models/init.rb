@@ -1,5 +1,5 @@
 require "active_record"
-require_relative 'instance'
+require 'instance'
 
 ActiveRecord::Base.configurations = YAML.load_file('config/database.yml')
 if development?

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150110083545) do
+ActiveRecord::Schema.define(version: 20150131065519) do
 
   create_table "instances", force: :cascade do |t|
     t.string   "name"
@@ -21,9 +21,20 @@ ActiveRecord::Schema.define(version: 20150110083545) do
     t.string   "mac"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "status"
+    t.integer  "machine_id"
   end
 
   add_index "instances", ["ip"], name: "index_instances_on_ip"
   add_index "instances", ["name"], name: "index_instances_on_name"
+
+  create_table "machines", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "disk_size"
+    t.integer  "memory"
+    t.string   "ip"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
