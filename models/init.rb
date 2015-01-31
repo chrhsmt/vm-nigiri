@@ -1,5 +1,6 @@
 require "active_record"
 require 'instance'
+require 'machine'
 
 ActiveRecord::Base.configurations = YAML.load_file('config/database.yml')
 if development?
