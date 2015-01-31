@@ -60,7 +60,7 @@ class DataCenterManager
             "ssh -o 'StrictHostKeyChecking no' " +
             "root@#{private_ip} '#{command}'" + dev_null
             print "Execute: #{one_liner}\n" if dump
-            pid = %q(one_liner)           
+            pid = %q(#{one_liner})           
         end
 
         def connect_monitor(ip, port, &blk)
