@@ -13,14 +13,14 @@ class DataCenterManager
     end
 
     def launch
-        ip = "192.168.6.1"
+        ip = "192.168.0.30"
         ssh(ip, "ifconfig", true)
         params = {
             name: "syake-test-vm",
             disk_size: 1024000000,
             memory: 1024,
             ip: ip,
-            mac: "98:fe:94:4f:15:7c",
+            mac: "52:54:00:12:34:60",
             status: STATUS_RUNNING
         }
         ::Instance.create!(params)
@@ -39,5 +39,4 @@ class DataCenterManager
             print "Execute: #{one_liner}\n" if dump
             system one_liner           
         end
-    end
 end
