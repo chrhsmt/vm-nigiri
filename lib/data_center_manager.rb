@@ -14,35 +14,37 @@ class DataCenterManager
     end
 
     def getInstances
-        ::Instance.all
+        ::Instance.all.includes(:machine)
     end
 
     def launch
         instance = nil
-        begin 
-            machine = ::Machine.first
-            vm_name = "vm_syake_#{SecureRandom.uuid}"
-            memory_size = 1024
-            machine_ip = machine.ip
-            vm_ip = machine.assign_ip_addr
-            params = {
-                machine: machine,
-                name: vm_name,
-                disk_size: 1024000000,
-                memory: memory_size,
-                ip: vm_ip,
-                # mac: macaddr,
-                status: STATUS_RUNNING
-            }
-            instance = ::Instance.create!(params)
-            macaddr = instance.gen_macaddr
-            instance.update_attributes(mac: macaddr)
-            ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr} #{vm_name}", true)
-            instance
-        rescue => e
-            puts e.message
-            instance.destroy if instance
-        ensure
+        ::Instance.transaction do 
+            begin 
+                machine = ::Machine.first
+                vm_name = "vm_syake_#{SecureRandom.uuid}"
+                memory_size = 1024
+                machine_ip = machine.ip
+                vm_ip = machine.assign_ip_addr
+                params = {
+                    machine: machine,
+                    name: vm_name,
+                    disk_size: 1024000000,
+                    memory: memory_size,
+                    ip: vm_ip,
+                    # mac: macaddr,
+                    status: STATUS_RUNNING
+                }
+                instance = ::Instance.create!(params)
+                macaddr = instance.gen_macaddr
+                instance.update_attributes(mac: macaddr)
+                ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr} #{vm_name}", true)
+                instance
+            rescue => e
+                puts e.message
+                raise ActiveRecord::Rollback, "Call tech support!"
+            ensure
+            end
         end
     end
 

@@ -13,6 +13,19 @@ html {
             div.inner-wrapper {
                 display: table-cell;
                 vertical-align: middle;
+                table {
+                    border: 1px solid #cccccc;
+                    tr {
+                        border: 1px solid #cccccc;
+                        th {
+                            text-align: center;
+                        }
+                        td, th {
+                            padding: 10px;
+                            border: 1px solid #cccccc;
+                        }
+                    }
+                }
             }
         }
     }
