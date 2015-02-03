@@ -38,7 +38,10 @@ class App < Sinatra::Base
 
     get '/instances' do
         hash = DataCenterManager.new.getInstances.map do | instance |
-            instance.attributes.merge({machine: instance.machine.attributes})
+            instance.attributes.merge({
+                machine: instance.machine.attributes,
+                key: instance.key
+            })
         end
         json hash
     end

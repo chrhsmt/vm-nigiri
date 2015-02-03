@@ -18,6 +18,7 @@ jQuery ->
                 $(row.find("td")[6]).html(instance.macaddr)
                 $(row.find("td")[7]).html(instance.telnet_port)
                 $(row.find("td")[8]).html(instance.status)
+                $(row.find("td")[9]).html(instance.key.id) if instance.key
                 row.removeAttr "class"
                 $("#instances").append row
             $("#instances tr.trow").remove()

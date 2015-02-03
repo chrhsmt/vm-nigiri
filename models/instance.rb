@@ -1,5 +1,6 @@
 class Instance < ActiveRecord::Base
     belongs_to :machine
+    has_one :key
 
     DEFAULT_TELNET_PORT = 4444
 
