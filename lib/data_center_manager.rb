@@ -7,42 +7,52 @@ class DataCenterManager
 
     STATUS_RUNNING = "running".freeze
     SETUP_SHELL = "/root/setup.sh".freeze
-    STARTUP_SHELL = "/root/start.sh".freeze
+    STARTUP_SHELL = "/root/(vm_name)/start.sh"
+    TEARDOWN_SHELL = "/root/teardown.sh".freeze
 
     def initialize
         
     end
 
     def getInstances
-        ::Instance.all
+        ::Instance.all.includes(:machine)
     end
 
     def launch
         instance = nil
-        begin 
-            machine = ::Machine.first
-            vm_name = "vm_syake_#{SecureRandom.uuid}"
-            memory_size = 1024
-            machine_ip = machine.ip
-            vm_ip = machine.assign_ip_addr
-            params = {
-                machine: machine,
-                name: vm_name,
-                disk_size: 1024000000,
-                memory: memory_size,
-                ip: vm_ip,
-                # mac: macaddr,
-                status: STATUS_RUNNING
-            }
-            instance = ::Instance.create!(params)
-            macaddr = instance.gen_macaddr
-            instance.update_attributes(mac: macaddr)
-            ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr} #{vm_name}", true)
-            instance
-        rescue => e
-            puts e.message
-            instance.destroy if instance
-        ensure
+        ::Instance.transaction do 
+            begin 
+                machine = ::Machine.first
+                vm_name = "vm_syake_#{SecureRandom.uuid}"
+                key = generate_key(vm_name)
+                memory_size = 1024
+                machine_ip = machine.ip
+                vm_ip = machine.assign_ip_addr
+                params = {
+                    machine: machine,
+                    name: vm_name,
+                    disk_size: 1024000000,
+                    memory: memory_size,
+                    ip: vm_ip,
+                    # mac: macaddr,
+                    status: STATUS_RUNNING,
+                    key: key
+                }
+                instance = ::Instance.create!(params)
+                macaddr = instance.gen_macaddr
+                instance.update_attributes(mac: macaddr)
+
+                telnet_port = instance.gen_telnet_port
+                instance.update_attributes(telnet_port: telnet_port)
+
+                start_shell = STARTUP_SHELL.gsub("(vm_name)", vm_name)
+                ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr} \"#{key.public_key}\"; #{start_shell} #{memory_size} #{macaddr} #{vm_name} #{telnet_port}", true)
+                instance
+            rescue => e
+                puts e.message
+                raise ActiveRecord::Rollback, "Call tech support!"
+            ensure
+            end
         end
     end
 
@@ -61,8 +71,11 @@ class DataCenterManager
             # Telnetのコネクションが切切れるので正常終了
         rescue => e
             ssh(machine.ip, "kill -9 $(cat /var/run/#{instance.name}.pid)", true)
-            instance.destroy!
             nil
+        ensure
+            instance.key.destroy!
+            instance.destroy!
+            ssh(machine.ip, "#{TEARDOWN_SHELL} #{instance.name}", true)
         end
     end
 
@@ -91,5 +104,17 @@ class DataCenterManager
             ensure
                 telnet.close
             end
+        end
+
+        def generate_key(name)
+            directory = "#{App.settings.root}/keys"
+            `ssh-keygen -t rsa -f #{directory}/#{name} -P ""`
+            public_key = `cat #{directory}/#{name}.pub`
+            private_key = `cat #{directory}/#{name}`
+            Key.create!({
+                name: name,
+                public_key: public_key,
+                private_key: private_key
+            })
         end
 end
