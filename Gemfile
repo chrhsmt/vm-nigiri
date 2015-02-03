@@ -9,6 +9,7 @@ gem "rake"
 
 gem "sass"
 gem "coffee-script"
+gem 'therubyracer'
 
 gem 'sqlite3'
 
