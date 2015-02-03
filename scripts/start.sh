@@ -1,8 +1,10 @@
 #!/bin/bash
 
+set -e
+
 MEMORY=$1
 TELNET_PORT=4444
-METADATA_DRIVE=./metadata_drive
+METADATA_DRIVE=$(dirname $0)/metadata_drive
 MAC_ADDR=$2
 NAME=$3
 
