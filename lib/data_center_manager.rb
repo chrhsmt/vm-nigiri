@@ -7,7 +7,8 @@ class DataCenterManager
 
     STATUS_RUNNING = "running".freeze
     SETUP_SHELL = "/root/setup.sh".freeze
-    STARTUP_SHELL = "/root/start.sh".freeze
+    STARTUP_SHELL = "/root/(vm_name)/start.sh"
+    TEARDOWN_SHELL = "/root/teardown.sh".freeze
 
     def initialize
         
@@ -38,7 +39,12 @@ class DataCenterManager
                 instance = ::Instance.create!(params)
                 macaddr = instance.gen_macaddr
                 instance.update_attributes(mac: macaddr)
-                ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{STARTUP_SHELL} #{memory_size} #{macaddr} #{vm_name}", true)
+
+                telnet_port = instance.gen_telnet_port
+                instance.update_attributes(telnet_port: telnet_port)
+
+                start_shell = STARTUP_SHELL.gsub("(vm_name)", vm_name)
+                ssh(machine_ip, "#{SETUP_SHELL} #{vm_name} #{vm_ip} #{macaddr}; #{start_shell} #{memory_size} #{macaddr} #{vm_name} #{telnet_port}", true)
                 instance
             rescue => e
                 puts e.message
@@ -65,6 +71,8 @@ class DataCenterManager
             ssh(machine.ip, "kill -9 $(cat /var/run/#{instance.name}.pid)", true)
             instance.destroy!
             nil
+        ensure
+            ssh(machine.ip, "#{TEARDOWN_SHELL} #{instance.name}", true)
         end
     end
 

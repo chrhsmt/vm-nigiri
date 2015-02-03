@@ -16,7 +16,8 @@ jQuery ->
                 $(row.find("td")[4]).html(instance.disk_size)
                 $(row.find("td")[5]).html(instance.memory)
                 $(row.find("td")[6]).html(instance.macaddr)
-                $(row.find("td")[7]).html(instance.status)
+                $(row.find("td")[7]).html(instance.telnet_port)
+                $(row.find("td")[8]).html(instance.status)
                 row.removeAttr "class"
                 $("#instances").append row
             $("#instances tr.trow").remove()
